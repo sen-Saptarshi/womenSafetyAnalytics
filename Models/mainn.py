@@ -7,7 +7,6 @@ from ultralytics import YOLO
 # Initialize webcam
 # cap = cv2.VideoCapture(0)
 
-model = YOLO('yolov8n.pt')  # You can replace with 'yolov8s.pt', 'yolov8m.pt', etc.
 # gender_net = cv2.dnn.readNetFromCaffe('deploy_gender.prototxt', 'gender_net.caffemodel')
 # GENDER_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
 # GENDER_LIST = ['Male', 'Female']
@@ -16,8 +15,8 @@ def riskCalc(frame_path, model):
     parameters = [0, 0, 0, 0, 0.4] # total people, male, female, is_night, location index
     # if not ret:
     #     break
-    frame = cv2.imread(frame_path)
-
+    cap = cv2.VideoCapture(frame_path)
+    ret, frame = cap.read()
     # Perform object detection
     results = model(frame)
 
@@ -48,7 +47,7 @@ def riskCalc(frame_path, model):
     cv2.putText(annotated_frame, f"Total Objects: {total_objects}", (10, y_offset), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 2)
 
     # Display the resulting frame
-    # cv2.imshow('YOLOv8 Live Tracking with Counts', frame)
+    cv2.imshow('YOLOv8 Live Tracking with Counts', annotated_frame)
     for class_name, count in counts.items():
         if class_name == 'person':
             pers=count
@@ -60,10 +59,11 @@ def riskCalc(frame_path, model):
 
     return parameters
 
+model = YOLO('yolov8n.pt')  # You can replace with 'yolov8s.pt', 'yolov8m.pt', etc.
 print(riskCalc('./sam.jpg', model))
-# path = r'sam.jpg'
+# path = r'womenSafetyAnalytics/Models/sam.jpg'
 
-# Reading an image in default mode
+# # Reading an image in default mode
 # image = cv2.imread(path)
 
 # # Window name in which image is displayed

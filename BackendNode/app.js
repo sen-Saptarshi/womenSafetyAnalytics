@@ -1,12 +1,14 @@
 const express = require("express");
 const app = express();
 const axios = require("axios");
+const cors = require("cors");
+app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 const LocationSchema = require("./dbschema");
 const mongoose = require("mongoose");
 const PoliceSchema = require("./policeSchema");
 const UserSchema = require("./userSchema");
-
+const calculateWomenSafetyRisk = require("./calculateRisk");
 mongoose
   .connect("mongodb://127.0.0.1:27017/womenSafetyAnalytics", {})
   .then(() => {
@@ -21,10 +23,15 @@ app.use(express.json());
 // Function to fetch risk data from the API
 async function getRisk() {
   try {
-    // let response = await axios.get(
-    //   "https://824x24f1-5000.inc1.devtunnels.ms/data"
-    // );
-    return 50;
+    let response = await axios.get(
+      "https://swtrmrt7-5000.inc1.devtunnels.ms/data"
+    );
+
+    let mfr = response.data.male / response.data.female;
+
+    return Math.floor(
+      calculateWomenSafetyRisk(new Date().getHours(), mfr, response.data.risk)
+    );
   } catch (error) {
     console.error("Error fetching risk data:", error);
     return { alert: false, message: "Error fetching data" }; // Default return value on error
@@ -36,8 +43,8 @@ app.get("/getrisk", async (req, res) => {
   try {
     let risk = await getRisk();
     // Redirect based on the 'alert' status
-    if(risk > 80) {
-      res.json({ risk, alert: true });
+    if (risk > 20) {
+      return res.json({ risk, alert: true });
     }
     res.json({ risk, alert: false });
   } catch (error) {
@@ -65,7 +72,7 @@ const policeMiddleware = (req, res, next) => {
   }
 };
 
-app.post("/report",policeMiddleware, async (req, res) => {
+app.post("/report", policeMiddleware, async (req, res) => {
   try {
     const existingLocation = await LocationSchema.findOne({
       name: req.body.name.toLowerCase(),
@@ -94,9 +101,7 @@ const userMiddleware = (req, res, next) => {
   if (req.body.section === "user") {
     next();
   }
-}
-
-
+};
 
 // Middleware to check if police is logged in
 app.post("/login", async (req, res) => {

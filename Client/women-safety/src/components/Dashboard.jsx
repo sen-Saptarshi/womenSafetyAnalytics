@@ -1,10 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bar, Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
+import axios from 'axios';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 function Dashboard() {
+
+  const [riskPercent, setRiskPercent] = React.useState(0);
+
+  useEffect(() => {
+    const intervalId = setInterval(async () => {
+      const res = axios.get("/getrisk");
+      setRiskPercent(data.risk);
+    }, 2000);
+    return () => clearInterval(intervalId);
+  }, []);
+
   // Dummy data for charts
   const barData = {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
@@ -39,8 +51,8 @@ function Dashboard() {
           <p>1,230</p>
         </div>
         <div className="card">
-          <h3>Active Hotspots</h3>
-          <p>5</p>
+          <h3>Risk Percent</h3>
+          <p>{riskPercent}%</p>
         </div>
         <div className="card">
           <h3>Emergency Alerts</h3>

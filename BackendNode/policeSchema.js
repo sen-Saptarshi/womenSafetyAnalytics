@@ -3,8 +3,7 @@ const policeSchema = new mongoose.Schema({
   name: String,
   unique_id: String,
   station: String,
-  address: String,
-  passwored: String,
+  password: String,
 });
 
 module.exports = mongoose.model("Police", policeSchema);

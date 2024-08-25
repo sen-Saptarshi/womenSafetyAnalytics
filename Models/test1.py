@@ -3,12 +3,12 @@ import cv2
 from ultralytics import YOLO
 
 # Load YOLOv8 model
-model = YOLO('yolov8n.pt')  # You can replace with 'yolov8s.pt', 'yolov8m.pt', etc.
+# model = YOLO('yolov8n.pt')  # You can replace with 'yolov8s.pt', 'yolov8m.pt', etc.
 
 # Initialize webcam
-cap = cv2.VideoCapture(0)  # Use 0 for default webcam, or specify the camera index
+# cap = cv2.VideoCapture(0)  # Use 0 for default webcam, or specify the camera index
 # counter = 0
-def frameCap():
+def frameCap(model, cap):
     # counter+=1
     ret, frame = cap.read()  # Capture frame-by-frame
     if not ret:
@@ -43,6 +43,6 @@ def frameCap():
     parameters[2] = pers//2
     return parameters
     
-print(frameCap())
+
 # Release the capture and close windows
-cap.release()
+# cap.release()

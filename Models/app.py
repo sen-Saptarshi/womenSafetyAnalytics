@@ -1,16 +1,17 @@
+import cv2
 from flask import Flask, jsonify
 import test1
-import hello
+from ultralytics import YOLO
+# import hello
 app = Flask(__name__)
 
 
-
-
-riskPercent = 50
-
+model = YOLO('yolov8n.pt')
+cap = cv2.VideoCapture(0)
 @app.route("/data", methods=['GET'])
 def get_data():
-    data = {"message": "All Good", "risk": riskPercent}
+    parameters = test1.frameCap(model, cap)
+    data = {"total":parameters[0], "male":parameters[1], "female":parameters[2], "is_night":parameters[3], "risk": parameters[4]}
     return jsonify(data)
 
 if __name__ == '__main__':
